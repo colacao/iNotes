@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<title></title>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.6.1/dropbox.min.js"></script>
+	<script type="text/javascript">
+		var client = null;
+		function readdir(){
+				client.readdir("/", function(error, entries) {
+				  if (error) {
+				    return alert(error);  // Something went wrong.
+				  }
+				  var str = [];
+				  //debugger;
+				  for(var i=0;i<entries.length;i++){
+
+				  		str.push("<div>"+entries[i]+"</div>");
+				  }
+				  // var temp=document.createElement('div');
+				  // temp.innerHTML = str.join('');
+				  document.getElementById('notes').innerHTML = str.join('');
+				  //alert("Your Dropbox contains " + entries.join(", "));
+				});
+
+		}
+		window.onload = function(){
+
+				client = new Dropbox.Client({
+				    key: "3wh0grov34v7ye9", secret: "7kv9fgabkyiqwhc", sandbox: true
+				});
+				client.authDriver(new Dropbox.Drivers.Redirect());
+				client.authenticate(function(error, data) {
+				    //debugger;
+				    client.getUserInfo(function(error, userInfo) {
+					  if (error) {
+					    return alert(error);  // Something went wrong.
+					  }
+
+					  document.title = ("Hello, " + userInfo.name + "!");
+					  readdir();
+					  
+					});
+				    //if (error) { return showError(error); }
+				    //doSomethingUseful(client);  // The user is now authenticated.
+				});
+				document.getElementById('nButton').onclick  = function(){
+						var t = document.getElementById('nTitle').value
+						var c = document.getElementById('nContent').value;
+						client.writeFile(t+".txt", c+"\n", function(error, stat) {
+						  if (error) {
+						    return alert(error);  // Something went wrong.
+						  }
+						  readdir();
+						  //alert("File saved as revision " + stat.revisionTag);
+						});
+
+				}
+				//client.authDriver(new Dropbox.Drivers.Redirect());
+				//console.log(client);
+
+		}
+	</script>
+</head>
+<body>
+	<div>
+			<input type="text" id="nTitle"/>;
+			<textarea name="nContent" id="nContent" cols="30" rows="10"></textarea>
+			<input type="button" value="确定" id="nButton" />
+	</div>
+	<div id="notes" style="width:300px;">
+		
+	</div>
+</body>
+</html>
