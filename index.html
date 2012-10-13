@@ -1,75 +1,623 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-	<title></title>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.6.1/dropbox.min.js"></script>
-	<script type="text/javascript">
-		var client = null;
-		function readdir(){
-				client.readdir("/", function(error, entries) {
-				  if (error) {
-				    return alert(error);  // Something went wrong.
-				  }
-				  var str = [];
-				  //debugger;
-				  for(var i=0;i<entries.length;i++){
-
-				  		str.push("<div>"+entries[i]+"</div>");
-				  }
-				  // var temp=document.createElement('div');
-				  // temp.innerHTML = str.join('');
-				  document.getElementById('notes').innerHTML = str.join('');
-				  //alert("Your Dropbox contains " + entries.join(", "));
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <title>
+            iNotes
+        </title>
+        <link rel="stylesheet" href="http://shared.ydstatic.com/ynote/web/387899/web/style/main.css"  type="text/css" />
+		<script charset="utf-8" src="kindeditor-4.1.2/kindeditor-min.js"></script>
+		<script charset="utf-8" src="kindeditor-4.1.2/lang/zh_CN.js"></script>
+        <script src="dropbox.min.js"> </script>
+        <script type="text/javascript">
+			var editor;
+			KindEditor.ready(function(K) {
+				editor = K.create('textarea[id="kedit_1349450822950"]', {
+					allowFileManager : true
 				});
+			});
+			String.prototype.replaceWith = function (d) { 
+				return this.replace(/\{\$(\w+)\}/g, function (a, c) {if (c in d) {return d[c];} else {return a;}}); 
+			}
+            var client = null;
+            function readdir() {
+                client.readdir("/",function(error, entries) {
+                    if (error) {
+                        return alert(error); 
+                    }
+                    var str = [];
+                    var tempstr = '<div class="entry note {$active}" data-note-id="/A48F44EF6B194526B2FA19BD560DD07E/web1349443916154"    active="{$active}">	<div class="entry-media">	</div>	<div class="entry-bd">		<h2 class="entry-title">			{$title}		</h2>		<p class="entry-summary">			<time class="entry-time">				{$date}			</time>			{$content}		</p>	</div>	<div class="entry-ft">	</div></div>';
+                    console.log(entries);
+					for (var i = 0; i < entries.length; i++) {
 
-		}
-		window.onload = function(){
+                        str.push(tempstr.replaceWith({
+								active:(i?"":"active"),
+								title:entries[i],
+								date:"2012-04-04",
+								content:"asdfasdfsd"
+						}));
+                    }
+                    document.getElementById('notes').innerHTML = str.join('');
+                });
 
-				client = new Dropbox.Client({
-				    key: "3wh0grov34v7ye9", secret: "7kv9fgabkyiqwhc", sandbox: true
-				});
-				client.authDriver(new Dropbox.Drivers.Redirect());
-				client.authenticate(function(error, data) {
-				    //debugger;
-				    client.getUserInfo(function(error, userInfo) {
-					  if (error) {
-					    return alert(error);  // Something went wrong.
-					  }
+            }
+            window.onload = function() {
+                client = new Dropbox.Client({
+                    key: "3wh0grov34v7ye9",
+                    secret: "7kv9fgabkyiqwhc",
+                    sandbox: true
+                });
+                client.authDriver(new Dropbox.Drivers.Redirect());
+                client.authenticate(function(error, data) {
+                    //debugger;
+                    client.getUserInfo(function(error, userInfo) {
+                        if (error) {
+                            return alert(error); // Something went wrong.
+                        }
 
-					  document.title = ("Hello, " + userInfo.name + "!");
-					  readdir();
-					  
-					});
-				    //if (error) { return showError(error); }
-				    //doSomethingUseful(client);  // The user is now authenticated.
-				});
-				document.getElementById('nButton').onclick  = function(){
-						var t = document.getElementById('nTitle').value
-						var c = document.getElementById('nContent').value;
-						client.writeFile(t+".txt", c+"\n", function(error, stat) {
-						  if (error) {
-						    return alert(error);  // Something went wrong.
-						  }
-						  readdir();
-						  //alert("File saved as revision " + stat.revisionTag);
-						});
+                        document.getElementById('user-name').innerHTML = ( userInfo.name );
+                        readdir();
 
-				}
-				//client.authDriver(new Dropbox.Drivers.Redirect());
-				//console.log(client);
+                    });
+                });
+                /*document.getElementById('nButton').onclick = function() {
+                    var t = document.getElementById('nTitle').value
+                    var c = document.getElementById('nContent').value;
+                    client.writeFile(t + ".txt", c + "\n",
+                    function(error, stat) {
+                        if (error) {
+                            return alert(error); // Something went wrong.
+                        }
+                        readdir();
+                    });
 
-		}
-	</script>
-</head>
-<body>
-	<div>
-			<input type="text" id="nTitle"/>;
-			<textarea name="nContent" id="nContent" cols="30" rows="10"></textarea>
-			<input type="button" value="确定" id="nButton" />
-	</div>
-	<div id="notes" style="width:300px;">
-		
-	</div>
-</body>
+                }*/
+            }
+        </script>
+    </head>
+    <body youdao="bind">
+        <div id="wrap">
+        </div>
+        <div class="page-wrap">
+            <div class="blk-top fit-size-sibling">
+                <div id="nw_head_menu">
+                    <div class="blk-top">
+                        <div class="top-logo">
+                           
+                        </div>
+                        <!-- user panel -->
+                        <div class="top-u-panel">
+                            晚上好，
+                            <a href="setting" class="user-email" id="user-name">
+                               
+                                <!--div class="storage-status">
+                                    <div class="storage-status-inner">
+                                        <div class="storage-status-used" style="width:0%">
+                                            0%
+                                        </div>
+                                    </div>
+                                </div-->
+                            </a>
+                            <i class="split">
+                                |
+                            </i>
+                            <!--a class="link-import clickable">
+                                导入
+                            </a>
+                            <i class="split">
+                                |
+                            </i>
+                            <a class="link-nofitication clickable">
+                                通知
+                            </a>
+                            <i class="split">
+                                |
+                            </i>
+                            <a href="http://www.youdao.com/help/note/qa/001/" target="_blank" class="link-help">
+                                帮助
+                            </a>
+                            <i class="split">
+                                |
+                            </i>
+                            <a href="http://feedback.youdao.com/note_web_report.jsp?prodtype=note_web"
+                            target="_blank" class="link-feedback">
+                                意见反馈
+                            </a>
+                            <i class="split">
+                                |
+                            </i-->
+                            <a class="link-logout clickable">
+                                退出
+                            </a>
+                        </div>
+                        <!-- /user panel -->
+                        <hr class="top-btm-hr">
+                    </div>
+                </div>
+            </div>
+            <div class="blk-mid fit-size" style="height: 1029px;">
+                <div class="blk-main">
+                    <div class="blk-aside">
+                        <div class="blk-hd btn-assemb fit-size-sibling">
+                            <a href="" class="btn blue-btn first-btn new-note">
+                                <i class="ico ico-note-white">
+                                </i>
+                                新建笔记
+                            </a>
+                            <a href="" class="btn blue-btn last-btn new-notebook">
+                                <i class="btn-bor-l">
+                                </i>
+                                <i class="ico ico-category-white">
+                                </i>
+                                新建笔记本
+                            </a>
+                        </div>
+                        <div class="blk-bd fit-size" style="height: 978px;">
+                            <div class="func func-expanded func-categories func-expandable">
+                                <div class="func-hd root-notebook on">
+                                    <a class="func-i">
+                                        <i class="ico ico-arrow-right ico-expandable">
+                                        </i>
+                                        <i class="ico ico-func-folder">
+                                        </i>
+                                        <span class="title" title="全部笔记">
+                                            全部笔记
+                                        </span>
+                                        <span class="form title title-edit item-invisiable">
+                                            <input type="text" class="text" value="全部笔记">
+                                        </span>
+                                        <span class="num">
+                                            (7)
+                                        </span>
+                                        <i class="ico action ico-box-plus">
+                                        </i>
+                                    </a>
+                                </div>
+                                <div class="func-bd">
+                                    <ul>
+                                        <li class="notebook" data-id="/1348335436984768">
+                                            <a class="func-i">
+                                                <i class="ico ico-func-note">
+                                                </i>
+                                                <span class="title" title="js">
+                                                    js
+                                                </span>
+                                                <span class="form title title-edit item-invisiable">
+                                                    <input type="text" class="text" value="js">
+                                                </span>
+                                                <span class="num">
+                                                </span>
+                                                <i class="ico action ico-box-down">
+                                                </i>
+                                            </a>
+                                        </li>
+                                        <li class="notebook" data-id="/VjztAIT">
+                                            <a class="func-i">
+                                                <i class="ico ico-func-note">
+                                                </i>
+                                                <span class="title" title="mac">
+                                                    mac
+                                                </span>
+                                                <span class="form title title-edit item-invisiable">
+                                                    <input type="text" class="text" value="mac">
+                                                </span>
+                                                <span class="num">
+                                                    (3)
+                                                </span>
+                                                <i class="ico action ico-box-down">
+                                                </i>
+                                            </a>
+                                        </li>
+                                        <li class="notebook" data-id="/1348335456503320">
+                                            <a class="func-i">
+                                                <i class="ico ico-func-note">
+                                                </i>
+                                                <span class="title" title="插件">
+                                                    插件
+                                                </span>
+                                                <span class="form title title-edit item-invisiable">
+                                                    <input type="text" class="text" value="插件">
+                                                </span>
+                                                <span class="num">
+                                                    (1)
+                                                </span>
+                                                <i class="ico action ico-box-down">
+                                                </i>
+                                            </a>
+                                        </li>
+                                        <li class="notebook" data-id="/A48F44EF6B194526B2FA19BD560DD07E">
+                                            <a class="func-i">
+                                                <i class="ico ico-func-dft-note">
+                                                </i>
+                                                <span class="title" title="默认笔记本">
+                                                    默认笔记本
+                                                </span>
+                                                <span class="form title title-edit item-invisiable">
+                                                    <input type="text" class="text" value="默认笔记本">
+                                                </span>
+                                                <span class="num">
+                                                    (3)
+                                                </span>
+                                                <i class="ico action ico-box-down">
+                                                </i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="func func-expanded func-calendar func-expandable">
+                                <!-- vim: set ft=html: -->
+                                <div class="func-hd">
+                                    <a class="func-i">
+                                        <i class="ico ico-arrow-right ico-expandable">
+                                        </i>
+                                        <i class="ico ico-func-calendar">
+                                        </i>
+                                        时间
+                                    </a>
+                                </div>
+                                <div class="func-bd">
+                                    <ul class="list-i">
+                                        <li class="expandable">
+                                            <a class="func-i">
+                                                <i class="ico ico-arrow-right">
+                                                </i>
+                                                按创建时间
+                                            </a>
+                                            <ul class="list-ii">
+                                                <li data-filter="ctime-today">
+                                                    <a class="func-i">
+                                                        今天
+                                                    </a>
+                                                </li>
+                                                <li data-filter="ctime-thisweek">
+                                                    <a class="func-i">
+                                                        本周
+                                                    </a>
+                                                </li>
+                                                <li data-filter="ctime-thismonth">
+                                                    <a class="func-i">
+                                                        本月
+                                                    </a>
+                                                </li>
+                                                <li data-filter="ctime-thisyear">
+                                                    <a class="func-i">
+                                                        今年
+                                                    </a>
+                                                </li>
+                                                <li data-filter="ctime-userdefine">
+                                                    <a class="func-i">
+                                                        自定义时间段
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="expandable">
+                                            <a class="func-i">
+                                                <i class="ico ico-arrow-right">
+                                                </i>
+                                                按修改时间
+                                            </a>
+                                            <ul class="list-ii">
+                                                <li data-filter="mtime-today">
+                                                    <a class="func-i">
+                                                        今天
+                                                    </a>
+                                                </li>
+                                                <li data-filter="mtime-thisweek">
+                                                    <a class="func-i">
+                                                        本周
+                                                    </a>
+                                                </li>
+                                                <li data-filter="mtime-thismonth">
+                                                    <a class="func-i">
+                                                        本月
+                                                    </a>
+                                                </li>
+                                                <li data-filter="mtime-thisyear">
+                                                    <a class="func-i">
+                                                        今年
+                                                    </a>
+                                                </li>
+                                                <li data-filter="mtime-userdefine">
+                                                    <a class="func-i">
+                                                        自定义时间段
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="func func-trash">
+                                <div class="func-hd">
+                                    <a class="func-i trash">
+                                        <i class="ico ico-func-trash">
+                                        </i>
+                                        回收站
+                                        <span class="trash-num num">
+                                            (12)
+                                        </span>
+                                        <i class="ico action ico-box-down">
+                                        </i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="blk-ft fit-size-sibling">
+                            <!-- AD here -->
+                        </div>
+                    </div>
+                    <div class="blk-list view-snap" style="height: 100%;">
+                        <div class="blk-hd fit-size-sibling">
+                            <a class="btn ico-btn view-btn">
+                                <i data-target="0" class="ico ico-snap">
+                                </i>
+                                <i data-target="1" class="ico ico-table">
+                                </i>
+                                <i class="ico ico-arrow-down">
+                                </i>
+                            </a>
+                            <form class="form hd-form search-form">
+                                <input class="text search-input" type="text">
+                                <input class="ico ico-zoom" type="submit" value="搜索">
+                                <input class="ico ico-cancel" type="reset" value="清除">
+                            </form>
+                            <a class="btn ico-btn expand-btn expand">
+                                <i class="ico ico-arrow-down">
+                                </i>
+                            </a>
+                        </div>
+                        <div class="blk-bd fit-size" style="height: 988px;">
+                            <div class="blk-expand fit-size-sibling" style="display: block;">
+                                一共有 7 篇笔记来自
+                                <a href="" class="btn select-btn notebook-select-btn" data-type="notebook">
+                                    <span select-btn-text="">
+                                        全部笔记
+                                    </span>
+                                    <i class="ico ico-arrow-down">
+                                    </i>
+                                </a>
+                                <br>
+                            </div>
+                            <div class="list-wrp-snap fit-size" style="height: 953px;" id="notes">
+								<!--
+                                <div class="entry note active" data-note-id="/A48F44EF6B194526B2FA19BD560DD07E/web1349443916154"                                active="active">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            test
+                                        </h2>
+                                        <p class="entry-summary">
+                                            <time class="entry-time">
+                                                2012-10-5
+                                            </time>
+                                            teststasdfasdfsdf
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                    </div>
+                                </div>
+                                <div class="entry note" data-note-id="/VjztAIT/web1348754551962">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            brew install abc
+                                        </h2>
+                                        <p class="entry-summary">
+                                            <time class="entry-time">
+                                                2012-09-27
+                                            </time>
+                                            brew install abc
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                    </div>
+                                </div>
+                                <div class="entry note" data-note-id="/VjztAIT/854FC8DF2B0E450BA67403D981398A7F">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            ipad root 密码
+                                        </h2>
+                                        <p class="entry-summary">
+                                            <time class="entry-time">
+                                                2012-09-25
+                                            </time>
+                                            alpine
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                    </div>
+                                </div>
+                                <div class="entry note" data-note-id="/VjztAIT/web1348543435378">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            伪造mac地址&nbsp;
+                                        </h2>
+                                        <p class="entry-summary">
+                                            <time class="entry-time">
+                                                2012-09-25
+                                            </time>
+                                            ifconfig en0 ether 28:6a:ba:72:ce:4b
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                    </div>
+                                </div>
+                                <div class="entry note" data-note-id="/1348335456503320/E76B861EE02C4B6CA73BF4722601A7F4">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            Firefox附加组件开发者指南
+                                        </h2>
+                                        <p class="entry-summary hidden">
+                                            <time class="entry-time">
+                                                2012-09-22
+                                            </time>
+                                            Firefox附加组件开发者指南
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                        <i class="ico ico-attachment">
+                                        </i>
+                                        (1) 1.2MB
+                                    </div>
+                                </div>
+                                <div class="entry note" data-note-id="/A48F44EF6B194526B2FA19BD560DD07E/3FCE1B6D1DDE4974B6C50C914FDB68D7">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            浏览器插件
+                                        </h2>
+                                        <p class="entry-summary hidden">
+                                            <time class="entry-time">
+                                                2012-09-22
+                                            </time>
+                                            浏览器插件
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                        <i class="ico ico-attachment">
+                                        </i>
+                                        (1) 221.48KB
+                                    </div>
+                                </div>
+                                <div class="entry note" data-note-id="/A48F44EF6B194526B2FA19BD560DD07E/A283E7438A4746AE9E8FDED4AF829164">
+                                    <div class="entry-media">
+                                    </div>
+                                    <div class="entry-bd">
+                                        <h2 class="entry-title">
+                                            ios教程
+                                        </h2>
+                                        <p class="entry-summary hidden">
+                                            <time class="entry-time">
+                                                2012-09-22
+                                            </time>
+                                            ios教程，
+                                        </p>
+                                    </div>
+                                    <div class="entry-ft">
+                                        <i class="ico ico-attachment">
+                                        </i>
+                                        (1) 1.2MB
+                                    </div>
+                                </div>
+								-->
+							</div>
+                        </div>
+                    </div>
+                    <div class="blk-note view-snap" style="">
+                        <div class="blk-hd fit-size-sibling">
+                            <a class="btn recover-note">
+                                恢复笔记
+                            </a>
+                            &nbsp;
+                            <a class="btn edit-note">
+                                编辑
+                            </a>
+                            &nbsp;
+                            <a class="btn save-note">
+                                保存
+                            </a>
+                            &nbsp;
+                            <a class="btn delete-note">
+                                删除
+                            </a>
+                            &nbsp;
+                            <div class="btn-assemb">
+                                <a class="btn ico-btn first-btn print-note" title="打印">
+                                    <i class="ico ico-print">
+                                    </i>
+                                </a>
+                                <a class="btn ico-btn last-btn pop-note" title="新窗口打开">
+                                    <i class="btn-bor-l">
+                                    </i>
+                                    <i class="ico ico-jump-out">
+                                    </i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="blk-bd fit-size" style="height: 988px;">
+                            <div class="note-title fit-size-sibling">
+                                <nobr class="note-title-text" data-title="test">
+                                    test
+                                </nobr>
+                                <span class="form">
+                                    <input type="text" class="text note-title-input" value="test">
+                                </span>
+                                <span class="note-categorial btn ico-btn">
+                                    <i class="ico ico-category">
+                                    </i>
+                                    <span class="notebook-title-text">
+                                        默认笔记本
+                                    </span>
+                                    <i class="ico ico-arrow-down">
+                                    </i>
+                                </span>
+                                <a class="btn ico-btn expand-btn">
+                                    <i class="ico ico-arrow-down">
+                                    </i>
+                                </a>
+                            </div>
+                            <div class="blk-expand meta fit-size-sibling" style="display: block;">
+                                <nobr class="meta-create meta-col">
+                                    创建时间：2012-10-5 21:32
+                                </nobr>
+                                <i class="split">
+                                    |
+                                </i>
+                                <nobr class="meta-update meta-col">
+                                    修改时间：2012-10-5 21:45
+                                </nobr>
+                                <i class="split split-br">
+                                    |
+                                </i>
+                                <nobr class="meta-author meta-col form empty">
+                                    作者：
+                                    <span class="value edit-property" title="点击编辑作者">
+                                    </span>
+                                    <span class="text-placeholder" title="点击添加作者">
+                                        点击添加作者
+                                    </span>
+                                    <input type="text" class="embed-editable text" placeholder="作者信息" value=""
+                                    data-attribute="author">
+                                    <a href="" class="ico ico-edit edit-property" title="点击编辑作者">
+                                    </a>
+                                </nobr>
+                                <i class="split">
+                                    |
+                                </i>
+                                <nobr class="meta-via meta-col form empty">
+                                    来源：
+                                    <a class="value" href="" target="_blank" title="打开链接">
+                                    </a>
+                                    <span class="text-placeholder" title="点击添加来源网址">
+                                        点击添加来源网址
+                                    </span>
+                                    <input type="text" class="embed-editable text" placeholder="来源信息" value=""
+                                    data-attribute="sourceUrl">
+                                    <a href="" class="ico ico-edit edit-property" title="点击编辑来源网址">
+                                    </a>
+                                </nobr>
+                            </div>
+                            <div class="note-editor fit-size" style="height: 912px;">
+                              <textarea id="kedit_1349450822950" >
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
